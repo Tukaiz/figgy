@@ -32,12 +32,12 @@ class Figgy
       @freeze = false
 
       define_handler 'yml', 'yaml' do |contents|
-        YAML.load(contents)
+        load_yaml(contents)
       end
 
       define_handler 'yml.erb', 'yaml.erb' do |contents|
         erb = ERB.new(contents).result
-        YAML.load(erb)
+        load_yaml(erb)
       end
 
       define_handler 'json' do |contents|
@@ -160,6 +160,12 @@ class Figgy
 
     def overlay_values
       @overlays.map &:last
+    end
+
+    def load_yaml(source)
+      YAML.load(source, aliases: true) || {}
+    rescue ArgumentError
+      YAML.load(source) || {}
     end
   end
 end
